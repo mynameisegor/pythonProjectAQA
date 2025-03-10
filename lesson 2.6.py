@@ -69,7 +69,7 @@ student2 = {
     'age': 20,
     'grade': 'A'
 }
-print(f'Имя студента: {student2['name']}')
+print(f'Имя студента: {student2["name"]}')
 
 '''Задача 11: Проверка наличия ключа в словаре'''
 
@@ -95,7 +95,7 @@ print(student_student)
 '''Задача 13: Изменение элемента списка находящемся словаре'''
 
 students= {
-    'name': 'Maria>',
+    'name': 'Maria',
     'grades': [75, 82, 90]
 }
 students['grades'][0] = 85
