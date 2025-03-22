@@ -15,5 +15,5 @@ qa = input('Введите имя тестировщика:').capitalize()
 if qa in testers_dict:
     testers_dict[qa] += 1
 else:
-    testers_dict[qa.capitalize()] = 1
+    testers_dict[qa] = 1
 print(f'Обновленные данные: {testers_dict}')

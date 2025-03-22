@@ -13,7 +13,7 @@
 
 name, job, tool = '', '', ''
 
-name = input("Введите вашу имя: ")
+name = input("Введите ваше имя: ")
 if not name:
     print("Вы не указали имя, повторите попытку")
 else:
