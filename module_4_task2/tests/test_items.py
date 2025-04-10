@@ -54,8 +54,8 @@ class TestItems:
         assert not check_data, 'В ответе get метода появилась запись, которая не должна создаться'
 
 
-    def test_create_get_delete_item_without_token(self, auth_session_without_token, generate_item_data, create_item):
-        """Тест доступа без токена.
+    def test_get_item_without_token (self, auth_session_without_token, generate_item_data, create_item):
+        """Тест корректности ответа при создании удалении и получении без токена.
                 Args:
                     auth_session_without_token: Фикстура с сессией без авторизации.
                     generate_item_data: Фикстура для генерации тестовых данных.
@@ -205,7 +205,7 @@ class TestItems:
         assert set(page1_ids).isdisjoint(set(page2_ids)), "Страницы содержат одинаковые элементы"
 
 
-    def test_get_items_structure(self, auth_session):
+    def test_get_items_structure(self, auth_session, create_item):
         """Тест структуры ответа для списка элементов.
                 Args:
                     auth_session: Фикстура с авторизованной сессией.
@@ -267,7 +267,7 @@ class TestItems:
         assert response.json()['detail'] == 'Item not found', 'Текст ошибки не соответствует'
 
 
-    def test_del_all_items(self, auth_session):
+    def test_delete_all_items(self, auth_session):
         data_list = []
         response = auth_session.get(self.endpoint)
         assert response.status_code in (200, 201), f"Response: {response.status_code}, {response.text}"

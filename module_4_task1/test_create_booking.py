@@ -1,7 +1,9 @@
 from constant import base_url
 
 class TestBooking:
-
+    """
+    Тесты для работы с бронированиями: создание, чтение, обновление, удаление и валидация данных.
+    """
     def test_create_check_delete_booking(self, auth_session, create_booking, booking_data):
         create_response = create_booking
         booking_id = create_response.get("bookingid")

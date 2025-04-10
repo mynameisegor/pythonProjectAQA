@@ -1,3 +1,5 @@
+from typing import Generator, Callable, Tuple, Dict, Any
+
 import pytest
 from requests import Session
 from module_4_task2.config.constants import AUTH_HEADERS, BASE_URL, AUTH_DATA, API_HEADERS
@@ -8,7 +10,7 @@ endpoint = f"{BASE_URL}/api/v1/items/"
 
 
 @pytest.fixture(scope='session')
-def auth_session():
+def auth_session() -> Session:
     """Фикстура для создания авторизованной сессии.
 
     Returns:
@@ -43,7 +45,7 @@ def auth_session():
 
 
 @pytest.fixture(scope='function')
-def auth_session_without_token():
+def auth_session_without_token() -> Session:
     """Фикстура для создания неавторизованной сессии (без токена).
 
     Returns:
@@ -55,7 +57,7 @@ def auth_session_without_token():
 
 
 @pytest.fixture
-def generate_item_data():
+def generate_item_data()-> Callable[[], dict[str, str | Any]]:
     """
     Фикстура для генерации тестовых данных элемента.
 
@@ -73,7 +75,7 @@ def generate_item_data():
 
 
 @pytest.fixture()
-def create_item(auth_session, generate_item_data):
+def create_item(auth_session: Session, generate_item_data: Callable[[], Dict[str, str]]) -> Tuple[Any, Dict[str, str]]:
     """Фикстура для создания тестового элемента.
 
     Args:
@@ -97,22 +99,18 @@ def create_item(auth_session, generate_item_data):
 
 
 @pytest.fixture()
-def cleanup_items(auth_session):
-    """Фикстура для очистки всех элементов.
-
+def cleanup_items(auth_session: Session) -> Generator[None, None, None]:
+    """Фикстура для очистки всех элементов до и после теста.
     Args:
         auth_session: Фикстура авторизованной сессии
-
-    Raises:
-        AssertionError: Если удаление элементов не удалось
     """
-    # Получение всех элементов
+
+    # Удаление всех существующих элементов перед тестом
     get_response = auth_session.get(endpoint)
     assert get_response.status_code == 200, (
         f"Ошибка получения списка элементов: {get_response.text}"
     )
 
-    # Удаление каждого элемента
     for item in get_response.json().get('data', []):
         item_id = item['id']
         del_response = auth_session.delete(f"{endpoint}{item_id}")
@@ -120,8 +118,16 @@ def cleanup_items(auth_session):
             f"Ошибка удаления элемента {item_id}: {del_response.text}"
         )
 
-    # Проверка, что все элементы удалены
     final_check = auth_session.get(endpoint)
     assert len(final_check.json().get("data", [])) == 0, (
-        "Не все элементы были удалены"
+        "Не все элементы были удалены перед тестом"
     )
+
+    yield
+
+    # Удаление всех элементов после теста
+    get_response = auth_session.get(endpoint)
+    if get_response.status_code == 200:  # Проверяем только если запрос успешен
+        for item in get_response.json().get('data', []):
+            item_id = item['id']
+            auth_session.delete(f"{endpoint}{item_id}")
